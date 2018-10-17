@@ -8,38 +8,42 @@ import Container from '../components/Container'
 import Pagination from '../components/Pagination'
 import SEO from '../components/SEO'
 import config from '../utils/siteConfig'
+import Header from '../components/layout/Header'
 
 const Index = ({ data, pageContext }) => {
   const posts = data.allContentfulPost.edges
+  const { title, slug, body } = data.contentfulPage
   const featuredPost = posts[0].node
   const { currentPage } = pageContext
   const isFirstPage = currentPage === 1
 
   return (
     <Layout>
-      <SEO />
-      {!isFirstPage && (
+      
+      {isFirstPage ? (
+        <div>
+          <SEO />
+          <Header title={title}></Header>
+          <Container>
+          
+          </Container>
+        </div>
+      ) : (
+        <div>
+        <SEO />
         <Helmet>
           <title>{`${config.siteTitle} - Page ${currentPage}`}</title>
         </Helmet>
-      )}
-      <Container>
-        {isFirstPage ? (
-          <CardList>
-            <Card {...featuredPost} featured />
-            {posts.slice(1).map(({ node: post }) => (
-              <Card key={post.id} {...post} />
-            ))}
-          </CardList>
-        ) : (
+        <Container>
           <CardList>
             {posts.map(({ node: post }) => (
               <Card key={post.id} {...post} />
             ))}
           </CardList>
-        )}
-        <Pagination context={pageContext} />
-      </Container>
+          <Pagination context={pageContext} />
+        </Container>
+        </div>
+      )}
     </Layout>
   )
 }
@@ -66,7 +70,7 @@ export const query = graphql`
           body {
             childMarkdownRemark {
               html
-              excerpt(pruneLength: 80)
+              excerpt(pruneLength: 90)
             }
           }
         }
